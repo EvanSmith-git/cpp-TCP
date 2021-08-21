@@ -1,0 +1,3 @@
+# cpp-TCP
+Work in progress...
+This will be a library to easily create a c++ TCP server or client with AES-256 encryption
