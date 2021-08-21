@@ -34,6 +34,7 @@ TCP::Core::~Core() {
 
 // Takes in port/address, sets socket descriptor
 void TCP::Core::useAddress(std::string port, std::optional<std::string> addr) {
+	if (isInit) throw std::exception("Tried to init TCP twice");
 	// Helper bools - if addr is defined we're setting up for a client
 	//                otherwise we're setting up for a server
 	// Client/Server could have seperate functions, but they share 90% of their code
