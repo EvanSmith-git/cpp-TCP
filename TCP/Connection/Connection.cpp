@@ -97,5 +97,17 @@ void TCP::Connection::readMsgs(std::function<void(Connection* con, tcpData msg)>
 }
 
 void TCP::Connection::send(tcpData msg) {
-	// TODO
+	int errCount = 0;
+	for (size_t bytesSent = 0; bytesSent < msg.size;) {
+		int bytesSentBySend = ::send(sockfd, msg.data.get(), msg.size, 0);
+
+		if (bytesSentBySend == -1) {
+			if (++errCount == 5) {
+				throw std::exception("Failed to send TCP data 5 times in a row");
+			}
+			continue;
+		} else errCount = 0;
+
+		bytesSent += bytesSentBySend;
+	}
 }
