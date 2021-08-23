@@ -89,6 +89,7 @@ TCP::Connection::Connection(int sockfd) : sockfd(sockfd) {
 }
 
 TCP::Connection::~Connection() {
+	closesocket(sockfd);
 	modifyInstanceCount(-1);
 }
 
