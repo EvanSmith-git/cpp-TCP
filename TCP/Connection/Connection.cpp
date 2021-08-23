@@ -1,4 +1,4 @@
-#include "Core.h"
+#include "Connection.h"
 #include <WinSock2.h>
 #pragma comment(lib, "ws2_32.lib")
 #include <Windows.h>
@@ -24,17 +24,8 @@ namespace {
 	}
 }
 
-TCP::Core::Core() {
-	modifyInstanceCount(1);
-}
-
-TCP::Core::~Core() {
-	modifyInstanceCount(-1);
-}
-
 // Takes in port/address, sets socket descriptor
-void TCP::Core::useAddress(std::string port, std::optional<std::string> addr) {
-	if (isInit) throw std::exception("Tried to init TCP twice");
+void TCP::Connection::useAddress(std::optional<std::string> addr, std::string port) {
 	// Helper bools - if addr is defined we're setting up for a client
 	//                otherwise we're setting up for a server
 	// Client/Server could have seperate functions, but they share 90% of their code
@@ -50,9 +41,8 @@ void TCP::Core::useAddress(std::string port, std::optional<std::string> addr) {
 
 	// Get address info for port/address
 	addrinfo* servinfo;
-	if (getaddrinfo(isClient ? addr.value().c_str() : NULL, port.c_str(), &hints, &servinfo) != 0) {
+	if (getaddrinfo(isClient ? addr.value().c_str() : NULL, port.c_str(), &hints, &servinfo) != 0)
 		throw std::exception("Failed to get address info");
-	}
 
 	// Loop through all the results and connect to the first we can
 	addrinfo* p;
@@ -62,8 +52,10 @@ void TCP::Core::useAddress(std::string port, std::optional<std::string> addr) {
 
 		if (isServer) {
 			char yes = '1';
-			if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+			if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+				freeaddrinfo(servinfo);
 				throw std::exception("Setsockopt failed");
+			}
 		}
 
 		if ((isClient ? connect : bind)(_sockfd, p->ai_addr, p->ai_addrlen) == -1) {
@@ -74,13 +66,36 @@ void TCP::Core::useAddress(std::string port, std::optional<std::string> addr) {
 		break;
 	}
 
-	if (p == NULL)
+	if (p == NULL) {
+		freeaddrinfo(servinfo);
 		throw std::exception("Failed to connect/bind");
+	}
+
+	freeaddrinfo(servinfo);
 
 	if (isServer && listen(_sockfd, 10) == -1)
 		throw std::exception("Failed to listen");
 
-	freeaddrinfo(servinfo);
-
 	sockfd = _sockfd;
+}
+
+TCP::Connection::Connection(std::optional<std::string> addr, std::string port) {
+	modifyInstanceCount(1);
+	useAddress(addr, port);
+}
+
+TCP::Connection::Connection(int sockfd) : sockfd(sockfd) {
+	modifyInstanceCount(1);
+}
+
+TCP::Connection::~Connection() {
+	modifyInstanceCount(-1);
+}
+
+void TCP::Connection::readMsgs(std::function<void(Connection* con, tcpData msg)> msgHandler) {
+	// TODO
+}
+
+void TCP::Connection::send(tcpData msg) {
+	// TODO
 }

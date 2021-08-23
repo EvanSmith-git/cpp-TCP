@@ -1,12 +1,10 @@
 #pragma once
-#include "../Core/Core.h"
+#include "../Connection/Connection.h"
 #include <functional>
 
 namespace TCP {
-	class Client : Core {
-	private:
-		std::function<void(tcpData)> msgHandler;
+	class Client : Connection {
 	public:
-		Client(std::string addr, std::string port, std::function<void(tcpData)> msgHandler);
+		Client(std::string addr, std::string port, std::function<void(Connection* con)> conHandler);
 	};
 }
