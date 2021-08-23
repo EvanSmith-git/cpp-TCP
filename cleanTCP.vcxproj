@@ -144,12 +144,12 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="TCP\Client\Client.cpp" />
-    <ClCompile Include="TCP\Core\Core.cpp" />
+    <ClCompile Include="TCP\Connection\Connection.cpp" />
     <ClCompile Include="TCP\Server\Server.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TCP\Client\Client.h" />
-    <ClInclude Include="TCP\Core\Core.h" />
+    <ClInclude Include="TCP\Connection\Connection.h" />
     <ClInclude Include="TCP\Server\Server.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

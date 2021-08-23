@@ -18,24 +18,24 @@
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TCP\Core\Core.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="TCP\Client\Client.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="TCP\Server\Server.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TCP\Connection\Connection.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="TCP\Core\Core.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TCP\Client\Client.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TCP\Server\Server.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TCP\Connection\Connection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
