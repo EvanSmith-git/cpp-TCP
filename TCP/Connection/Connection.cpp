@@ -96,7 +96,7 @@ void TCP::Connection::readMsgs(std::function<void(Connection* con, tcpData msg)>
 	// TODO
 }
 
-void TCP::Connection::send(tcpData msg) {
+void TCP::Connection::send(const tcpData& msg) {
 	int errCount = 0;
 	for (size_t bytesSent = 0; bytesSent < msg.size;) {
 		int bytesSentBySend = ::send(sockfd, msg.data.get(), msg.size, 0);

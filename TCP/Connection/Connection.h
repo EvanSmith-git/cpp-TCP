@@ -25,6 +25,6 @@ namespace TCP {
 		~Connection();
 
 		void readMsgs(std::function<void(Connection* con, tcpData msg)> msgHandler);
-		void send(tcpData msg);
+		void send(const tcpData& msg);
 	};
 }
