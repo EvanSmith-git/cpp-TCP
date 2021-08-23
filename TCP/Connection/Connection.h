@@ -5,7 +5,7 @@
 #include <functional>
 
 struct tcpData {
-	std::unique_ptr<char> data;
+	std::unique_ptr<char[]> data;
 	size_t size;
 };
 
