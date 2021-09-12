@@ -4,7 +4,7 @@
 #include <memory>
 #include <functional>
 
-struct tcpData {
+struct TcpData {
 	std::unique_ptr<char[]> data;
 	size_t size;
 };
@@ -15,7 +15,7 @@ namespace TCP {
 		void useAddress(std::optional<std::string> addr, std::string port);
 
 	protected:
-		std::function<void(Connection* con, tcpData msg)> msgHandler;
+		std::function<void(Connection* con, TcpData msg)> msgHandler;
 		int sockfd = 0;
 
 	public:
@@ -24,7 +24,7 @@ namespace TCP {
 		Connection(int sockfd);
 		~Connection();
 
-		void readMsgs(std::function<void(Connection* con, tcpData msg)> msgHandler);
-		void send(const tcpData& msg);
+		void readMsgs(std::function<void(Connection* con, TcpData msg)> msgHandler);
+		void send(const TcpData& msg);
 	};
 }
