@@ -27,6 +27,9 @@
     <ClCompile Include="TCP\Connection\Connection.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TCP\Utility\Utility.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TCP\Client\Client.h">
@@ -38,5 +41,11 @@
     <ClInclude Include="TCP\Connection\Connection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TCP\Utility\Utility.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PropertySheet.props" />
   </ItemGroup>
 </Project>

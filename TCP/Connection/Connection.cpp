@@ -7,6 +7,7 @@
 #include <mutex>
 #include <string>
 #include <optional>
+#include "../Utility/Utility.h"
 
 namespace {
 	// Count instances so we can WSAStartup() when instances go from 0 -> 1, and WSACleanup when all instances stop
@@ -104,7 +105,7 @@ void TCP::Connection::send(const TcpData& msg) {
 
 		if (bytesSentBySend == -1) {
 			if (++errCount == 5) {
-				throw std::exception("Failed to send TCP data 5 times in a row");
+				throw std::exception(("Failed to send TCP data 5 times in a row: " + getErrorText()).c_str());
 			}
 			continue;
 		} else errCount = 0;

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -23,6 +23,7 @@
     <ProjectGuid>{695D6BA6-B467-4D09-81CC-888B1BEA99DD}</ProjectGuid>
     <RootNamespace>cleanTCP</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+	<VcpkgTriplet Condition="'$(Platform)'=='x64'">x64-windows-static</VcpkgTriplet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -133,6 +134,7 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -146,11 +148,18 @@
     <ClCompile Include="TCP\Client\Client.cpp" />
     <ClCompile Include="TCP\Connection\Connection.cpp" />
     <ClCompile Include="TCP\Server\Server.cpp" />
+    <ClCompile Include="TCP\Utility\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TCP\Client\Client.h" />
     <ClInclude Include="TCP\Connection\Connection.h" />
     <ClInclude Include="TCP\Server\Server.h" />
+    <ClInclude Include="TCP\Utility\Utility.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PropertySheet.props">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
