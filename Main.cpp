@@ -2,13 +2,15 @@
 #include "TCP/Client/Client.h"
 
 int main() {
-	TCP::Client myClient("127.0.0.1", "678", [](TCP::Connection* con){
-		TcpData msg;
-		msg.data = std::make_unique<char[]>(12);
-		msg.size = 12;
+	TCP::Client myClient("127.0.0.1", "678", [](TCP::Connection& con){
+		TCP::TcpBuffer msg(12);
 		memcpy(msg.data.get(), "Hello World", 12);
 
-		con->send(msg);
+		con.send(msg);
+
+		con.readMsgs([](TCP::Connection& con, TCP::TcpBuffer& msg) {
+			std::cout << "Got: " << msg.data.get() << '\n';
+		});
 	});
 
 	return 0;
