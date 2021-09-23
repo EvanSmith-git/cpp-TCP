@@ -91,22 +91,30 @@ TCP::Connection::Connection(int sockfd, const sockaddr* sockAddr) : sockfd(sockf
 }
 
 TCP::Connection::~Connection() {
-	closesocket(sockfd);
+	if (!closed) close();
 	WSACleanup();
+}
+
+void TCP::Connection::close() {
+	if (closed) throw std::exception("Attempted to close socket twice");
+	closed = true;
+	closesocket(sockfd);
 }
 
 namespace {
 	// Basic reading, not final
 	void readLoop(TCP::Connection* con, std::function<void(TCP::Connection& con, TCP::TcpBuffer& msg)> msgHandler) {
-		while (true) {
+		while (!con->closed) {
 			TCP::TcpBuffer buffer(2048);
 			int outSize = recv(con->sockfd, buffer.data.get(), 2048, 0);
+
 			// outSize == 0 means we've lost connection, abort loop so we can deconstruct gracefully
-			if (outSize == 0) break;
-			if (outSize < 0) {
-				std::cout << ("Error while reading data: " + getErrorText()).c_str() << '\n';
+			if (outSize == 0) 
 				break;
-			}
+
+			if (outSize < 0) 
+				throw std::exception(("Error while reading data: " + getErrorText()).c_str());
+
 			// We can truncate the buffer by reducing the size we say it is, it's up to the client to respect the size
 			buffer.size = outSize;
 			msgHandler(*con, buffer);

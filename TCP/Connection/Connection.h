@@ -17,6 +17,8 @@ namespace TCP {
 
 	public:
 		int sockfd = 0;
+		bool closed = false;
+
 		std::string ip;
 		std::string port;
 
@@ -24,6 +26,8 @@ namespace TCP {
 		// When constructing with sockfd, it's assumed that the socket is already connected
 		Connection(int sockfd, const sockaddr* sockAddr);
 		~Connection();
+
+		void close();
 
 		void readMsgs(std::function<void(Connection& con, TcpBuffer& msg)> msgHandler);
 		void send(TcpBuffer& msg);
