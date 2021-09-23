@@ -43,20 +43,25 @@ void TCP::Connection::useAddress(std::optional<std::string> addr, std::string po
 	addrinfo* p;
 	int _sockfd;
 	for (p = servinfo; p != NULL; p = p->ai_next) {
+		// Create socket
 		if ((_sockfd = socket(p->ai_family, p->ai_socktype, p->ai_protocol)) == -1) continue;
 
+		// Allow server to reuse port
 		if (isServer) {
 			char yes = '1';
-			if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
+			if (setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof yes) == -1) {
 				freeaddrinfo(servinfo);
 				throw std::exception("Setsockopt failed");
 			}
 		}
 
+		// Connect client or bind server to port
 		if ((isClient ? connect : bind)(_sockfd, p->ai_addr, p->ai_addrlen) == -1) {
 			closesocket(_sockfd);
 			continue;
 		}
+
+		ip = ipFromAddrinfo(p->ai_addr);
 
 		break;
 	}
@@ -74,13 +79,15 @@ void TCP::Connection::useAddress(std::optional<std::string> addr, std::string po
 	sockfd = _sockfd;
 }
 
-TCP::Connection::Connection(std::optional<std::string> addr, std::string port) {
+TCP::Connection::Connection(std::optional<std::string> addr, std::string port) : port(port) {
 	wsaInit();
 	useAddress(addr, port);
 }
 
-TCP::Connection::Connection(int sockfd) : sockfd(sockfd) {
+TCP::Connection::Connection(int sockfd, const sockaddr* sockAddr) : sockfd(sockfd) {
 	wsaInit();
+	ip = ipFromAddrinfo(sockAddr);
+	port = portFromAddrinfo(sockAddr);
 }
 
 TCP::Connection::~Connection() {

@@ -2,6 +2,7 @@
 #include <string>
 #include <optional>
 #include <functional>
+#include <WS2tcpip.h>
 
 namespace TCP {
 	struct TcpBuffer {
@@ -16,10 +17,12 @@ namespace TCP {
 
 	public:
 		int sockfd = 0;
+		std::string ip;
+		std::string port;
 
 		Connection(std::optional<std::string> addr, std::string port);
 		// When constructing with sockfd, it's assumed that the socket is already connected
-		Connection(int sockfd);
+		Connection(int sockfd, const sockaddr* sockAddr);
 		~Connection();
 
 		void readMsgs(std::function<void(Connection& con, TcpBuffer& msg)> msgHandler);
