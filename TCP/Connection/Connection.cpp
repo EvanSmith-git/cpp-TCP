@@ -4,24 +4,18 @@
 #include <Windows.h>
 #include <WS2tcpip.h>
 #include <stdexcept>
-#include <mutex>
-#include <string>
-#include <optional>
 #include "../Utility/Utility.h"
 
+#include <iostream>
+
+TCP::TcpBuffer::TcpBuffer(size_t size) : 
+	data(std::make_unique<char[]>(size)), 
+	size(size) {}
+
 namespace {
-	// Count instances so we can WSAStartup() when instances go from 0 -> 1, and WSACleanup when all instances stop
-	std::mutex instanceMutex; // Mutex for thread safety of instanceCount...
-	int instanceCount = 0;
-
-	void modifyInstanceCount(int amount) {
-		std::lock_guard<std::mutex> guard(instanceMutex);
-		instanceCount += amount;
-
+	void wsaInit() {
 		WSADATA wsaData;
-		if (instanceCount == 0) WSACleanup();
-		else if (instanceCount == 1)
-			if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) throw std::exception("WSAStartup failed");
+		if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) throw std::exception("WSAStartup failed");
 	}
 }
 
@@ -81,24 +75,44 @@ void TCP::Connection::useAddress(std::optional<std::string> addr, std::string po
 }
 
 TCP::Connection::Connection(std::optional<std::string> addr, std::string port) {
-	modifyInstanceCount(1);
+	wsaInit();
 	useAddress(addr, port);
 }
 
 TCP::Connection::Connection(int sockfd) : sockfd(sockfd) {
-	modifyInstanceCount(1);
+	wsaInit();
 }
 
 TCP::Connection::~Connection() {
 	closesocket(sockfd);
-	modifyInstanceCount(-1);
+	WSACleanup();
 }
 
-void TCP::Connection::readMsgs(std::function<void(Connection* con, TcpData msg)> msgHandler) {
-	// TODO
+namespace {
+	// Basic reading, not final
+	void readLoop(TCP::Connection* con, std::function<void(TCP::Connection& con, TCP::TcpBuffer& msg)> msgHandler) {
+		while (true) {
+			TCP::TcpBuffer buffer(2048);
+			int outSize = recv(con->sockfd, buffer.data.get(), 2048, 0);
+			// outSize == 0 means we've lost connection, abort loop so we can deconstruct gracefully
+			if (outSize == 0) break;
+			if (outSize < 0) {
+				std::cout << ("Error while reading data: " + getErrorText()).c_str() << '\n';
+				break;
+			}
+			// We can truncate the buffer by reducing the size we say it is, it's up to the client to respect the size
+			buffer.size = outSize;
+			msgHandler(*con, buffer);
+		}
+	}
 }
 
-void TCP::Connection::send(const TcpData& msg) {
+void TCP::Connection::readMsgs(std::function<void(Connection& con, TcpBuffer& msg)> msgHandler) {
+	// Using seperate function to be able to more easily add threading in the future
+	readLoop(this, msgHandler);
+}
+
+void TCP::Connection::send(TcpBuffer& msg) {
 	int errCount = 0;
 	for (size_t bytesSent = 0; bytesSent < msg.size;) {
 		int bytesSentBySend = ::send(sockfd, msg.data.get(), msg.size, 0);
