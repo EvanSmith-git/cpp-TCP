@@ -3,10 +3,9 @@
 #include <WinSock2.h>
 #pragma comment(lib, "ws2_32.lib")
 #include <Windows.h>
-#include <WS2tcpip.h>
 #endif
 
-std::string getErrorText(int errCode = 0) {
+std::string getErrorText(int errCode) {
 #if defined(_WIN32)
     static char message[256] = { 0 };
     FormatMessageA(
