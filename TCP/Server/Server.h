@@ -13,7 +13,5 @@ namespace TCP {
 	public:
 		Server(const std::string_view port, std::function<void(Server& self, Connection& con)> conHandler);
 		~Server();
-
-		void send();
 	};
 }
